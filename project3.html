@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .quiz-container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px 30px;
+      width: 400px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .btn-grid {
+      display: grid;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    button.correct {
+      background-color: #28a745;
+    }
+
+    button.wrong {
+      background-color: #dc3545;
+    }
+
+    #score-container {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Quiz Game</h1>
+    <div id="question-container">
+      <div id="question">Question text</div>
+      <div id="answer-buttons" class="btn-grid"></div>
+    </div>
+    <button id="next-btn">Next</button>
+    <div id="score-container"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "What is the capital of France?",
+        answers: ["Berlin", "Madrid", "Paris", "Rome"],
+        correct: "Paris"
+      },
+      {
+        question: "Which planet is known as the Red Planet?",
+        answers: ["Earth", "Venus", "Mars", "Jupiter"],
+        correct: "Mars"
+      },
+      {
+        question: "Who wrote the play 'Romeo and Juliet'?",
+        answers: ["William Shakespeare", "Charles Dickens", "Mark Twain", "Jane Austen"],
+        correct: "William Shakespeare"
+      },
+      {
+        question: "What is the largest mammal on Earth?",
+        answers: ["African Elephant", "Blue Whale", "Giraffe", "Whale Shark"],
+        correct: "Blue Whale"
+      },
+      {
+        question: "Which element has the chemical symbol 'O'?",
+        answers: ["Oxygen", "Gold", "Osmium", "Ozone"],
+        correct: "Oxygen"
+      }
+    ];
+
+    const questionElement = document.getElementById("question");
+    const answerButtons = document.getElementById("answer-buttons");
+    const nextButton = document.getElementById("next-btn");
+    const scoreContainer = document.getElementById("score-container");
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function startQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      scoreContainer.innerHTML = "";
+      nextButton.innerText = "Next";
+      showQuestion();
+    }
+
+    function showQuestion() {
+      resetState();
+      let currentQuestion = questions[currentQuestionIndex];
+      questionElement.innerText = currentQuestion.question;
+
+      currentQuestion.answers.forEach(answer => {
+        const button = document.createElement("button");
+        button.innerText = answer;
+        button.classList.add("btn");
+        button.addEventListener("click", () => selectAnswer(button, currentQuestion.correct));
+        answerButtons.appendChild(button);
+      });
+    }
+
+    function resetState() {
+      nextButton.style.display = "none";
+      while (answerButtons.firstChild) {
+        answerButtons.removeChild(answerButtons.firstChild);
+      }
+    }
+
+    function selectAnswer(selectedButton, correctAnswer) {
+      const isCorrect = selectedButton.innerText === correctAnswer;
+      if (isCorrect) {
+        selectedButton.classList.add("correct");
+        score++;
+      } else {
+        selectedButton.classList.add("wrong");
+      }
+
+      Array.from(answerButtons.children).forEach(button => {
+        if (button.innerText === correctAnswer) {
+          button.classList.add("correct");
+        }
+        button.disabled = true;
+      });
+
+      nextButton.style.display = "block";
+    }
+
+    nextButton.addEventListener("click", () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        showQuestion();
+      } else {
+        showScore();
+      }
+    });
+
+    function showScore() {
+      resetState();
+      questionElement.innerText = "Quiz Completed!";
+      scoreContainer.innerText = `Your Score: ${score} out of ${questions.length}`;
+      nextButton.innerText = "Play Again";
+      nextButton.style.display = "block";
+      nextButton.addEventListener("click", startQuiz);
+    }
+
+    startQuiz();
+  </script>
+</body>
+</html>
